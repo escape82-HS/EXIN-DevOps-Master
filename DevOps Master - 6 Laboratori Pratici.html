@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Master - Laboratori Pratici</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; }
+        .day-header { background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; }
+        .lab-card { background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; border-left: 6px solid; overflow: hidden; }
+        .lab-header { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .step-circle { width: 32px; height: 32px; border-radius: 50%; background-color: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 1rem; flex-shrink: 0; border: 2px solid #bfdbfe; }
+        .code-snippet { background-color: #1e293b; color: #a5b4fc; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.9rem; overflow-x: auto; margin: 0.5rem 0; }
+        .tool-badge { background-color: #e0f2fe; color: #0369a1; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
+        
+        /* Border colors per day */
+        .day1-border { border-color: #3b82f6; } /* Blue */
+        .day2-border { border-color: #10b981; } /* Green */
+        .day3-border { border-color: #8b5cf6; } /* Purple */
+    </style>
+</head>
+<body class="text-gray-800 p-6">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">DevOps Master Labs</h1>
+            <p class="text-gray-600">6 Esercitazioni Step-by-Step | Zero Installazione | Tools Cloud-Based</p>
+        </header>
+
+        <!-- GIORNO 1 -->
+        <div class="day-header">
+            <span class="text-2xl font-bold mr-4">GIORNO 1</span>
+            <span class="text-blue-100">Fondamenti, CI/CD e Version Control</span>
+        </div>
+
+        <!-- LAB 1.1 -->
+        <div class="lab-card day1-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 1.1: GitHub Flow & Pull Requests</h2>
+                    <p class="text-gray-500 text-sm mt-1">Simulazione del flusso di collaborazione DevOps (Branching Strategy)</p>
+                </div>
+                <span class="tool-badge"><i class="fab fa-github mr-1"></i> GitHub Web</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Creazione Repository</h3>
+                        <p class="text-sm text-gray-600">Vai su <a href="https://github.com" target="_blank" class="text-blue-600 underline">github.com</a> (effettua login/registrazione). Clicca su <strong>New Repository</strong>. Nominala <code>devops-lab-1</code>, seleziona "Public" e spunta "Add a README file". Clicca "Create repository".</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Creazione Branch (Feature)</h3>
+                        <p class="text-sm text-gray-600">Dalla pagina principale della repo, clicca sul menu a tendina che dice <strong>main</strong>. Digita <code>feature/nuova-home</code> e clicca su "Create branch: feature/nuova-home". Ora sei nel nuovo branch.</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Modifica e Commit</h3>
+                        <p class="text-sm text-gray-600">Clicca sul file <code>README.md</code> e poi sull'icona della matita (Edit). Aggiungi il testo: <code>## Benvenuti nel corso DevOps</code>. Scorri in basso, scrivi un messaggio di commit (es. "Aggiunto titolo") e clicca <strong>Commit changes</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">4</div>
+                    <div>
+                        <h3 class="font-bold">Pull Request (PR) & Merge</h3>
+                        <p class="text-sm text-gray-600">GitHub ti suggerirà "Compare & pull request". Cliccaci. Scrivi una descrizione e clicca <strong>Create Pull Request</strong>. Simula una review e poi clicca <strong>Merge Pull Request</strong> e conferma. Questo simula l'integrazione del codice nella mainline.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAB 1.2 -->
+        <div class="lab-card day1-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 1.2: Prima Pipeline CI con GitHub Actions</h2>
+                    <p class="text-gray-500 text-sm mt-1">Automazione di Build e Test nel cloud</p>
+                </div>
+                <span class="tool-badge"><i class="fas fa-rocket mr-1"></i> GitHub Actions</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Setup del Workflow</h3>
+                        <p class="text-sm text-gray-600">Nella stessa repository del Lab 1, clicca sulla tab in alto <strong>Actions</strong>. Clicca sul link "set up a workflow yourself" (testo piccolo in blu).</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Definizione Pipeline (YAML)</h3>
+                        <p class="text-sm text-gray-600">Cancella il contenuto predefinito e incolla questo codice che simula Build e Test:</p>
+                        <div class="code-snippet">
+name: DevOps CI Pipeline
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v3
+      
+      - name: Esegui Build Simulata
+        run: echo "Compilazione del software in corso..."
+        
+      - name: Esegui Unit Tests
+        run: |
+          echo "Esecuzione test..."
+          if grep -q "DevOps" README.md; then
+            echo "Test Passato: La parola DevOps è presente."
+          else
+            echo "Test Fallito!"
+            exit 1
+          fi</div>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Esecuzione e Verifica</h3>
+                        <p class="text-sm text-gray-600">Clicca su <strong>Commit changes</strong> in alto a destra. Vai nella tab <strong>Actions</strong>. Vedrai il workflow in esecuzione (pallino giallo -> verde). Clicca sul workflow e poi sul job "build-and-test" per vedere i log dell'automazione in tempo reale.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GIORNO 2 -->
+        <div class="day-header" style="background: linear-gradient(90deg, #059669 0%, #10b981 100%);">
+            <span class="text-2xl font-bold mr-4">GIORNO 2</span>
+            <span class="text-green-100">Feedback, Lean Management e Metriche</span>
+        </div>
+
+        <!-- LAB 2.1 -->
+        <div class="lab-card day2-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 2.1: Calcolo Metriche DORA</h2>
+                    <p class="text-gray-500 text-sm mt-1">Analisi dati per misurare le performance DevOps</p>
+                </div>
+                <span class="tool-badge"><i class="fas fa-table mr-1"></i> Google Sheets</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Preparazione Dati</h3>
+                        <p class="text-sm text-gray-600">Apri un nuovo foglio su <a href="https://sheets.google.com" target="_blank" class="text-blue-600 underline">Google Sheets</a>. Crea le seguenti colonne: <code>Data Deploy</code>, <code>Ora Commit</code>, <code>Ora Deploy</code>, <code>Esito (Successo/Fallito)</code>, <code>Ora Ripristino (se fallito)</code>.</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Inserimento Dati Simulati</h3>
+                        <p class="text-sm text-gray-600">Inserisci 5 righe di dati. Esempio:<br>
+                        1. 01/10, 09:00, 10:00, Successo, -<br>
+                        2. 02/10, 14:00, 14:30, Fallito, 15:30<br>
+                        3. 03/10, 10:00, 10:15, Successo, -</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Calcolo Lead Time & Failure Rate</h3>
+                        <p class="text-sm text-gray-600">
+                            <strong>Lead Time for Changes:</strong> Crea una formula che sottrae <code>Ora Commit</code> da <code>Ora Deploy</code> per ogni riga e fanne la media.<br>
+                            <strong>Change Failure Rate:</strong> Calcola la percentuale: <code>(Numero Falliti / Numero Totale Deploy) * 100</code>.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">4</div>
+                    <div>
+                        <h3 class="font-bold">Analisi Maturity</h3>
+                        <p class="text-sm text-gray-600">Confronta i tuoi risultati con la tabella DORA (presente nelle slide del Giorno 2) per determinare se il tuo "team virtuale" è Low, Medium, High o Elite performer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAB 2.2 -->
+        <div class="lab-card day2-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 2.2: Lean Flow con Kanban & WIP Limits</h2>
+                    <p class="text-gray-500 text-sm mt-1">Gestione del flusso e identificazione colli di bottiglia</p>
+                </div>
+                <span class="tool-badge"><i class="fab fa-trello mr-1"></i> Trello</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Setup Board</h3>
+                        <p class="text-sm text-gray-600">Vai su <a href="https://trello.com" target="_blank" class="text-blue-600 underline">Trello</a> (gratuito). Crea una nuova board chiamata "DevOps Flow". Crea le liste: <strong>Backlog</strong>, <strong>Development</strong>, <strong>Code Review</strong>, <strong>Testing</strong>, <strong>Done</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Impostazione WIP Limits</h3>
+                        <p class="text-sm text-gray-600">Rinomina le liste aggiungendo il limite nel nome per renderlo visibile. Esempio: <code>Development [Max 3]</code>, <code>Code Review [Max 2]</code>. Questo è il tuo "Visual Management".</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Simulazione Bottleneck</h3>
+                        <p class="text-sm text-gray-600">Crea 10 card nel Backlog. Spostane 3 in Development. Spostane 2 in Code Review. Prova a spostarne un'altra in Code Review: <strong>STOP!</strong> Hai raggiunto il WIP limit. <br><em>Obiettivo:</em> Capire che non puoi iniziare nuovo lavoro finché non sblocchi la Code Review (aiutando i colleghi).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GIORNO 3 -->
+        <div class="day-header" style="background: linear-gradient(90deg, #7c3aed 0%, #8b5cf6 100%);">
+            <span class="text-2xl font-bold mr-4">GIORNO 3</span>
+            <span class="text-purple-100">Architecture, Feature Flags e Process Improvement</span>
+        </div>
+
+        <!-- LAB 3.1 -->
+        <div class="lab-card day3-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 3.1: Feature Flags (Decoupling Deploy)</h2>
+                    <p class="text-gray-500 text-sm mt-1">Implementazione pratica di un toggle per Dark Launching</p>
+                </div>
+                <span class="tool-badge"><i class="fab fa-codepen mr-1"></i> CodePen</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Ambiente di Coding</h3>
+                        <p class="text-sm text-gray-600">Vai su <a href="https://codepen.io/pen/" target="_blank" class="text-blue-600 underline">CodePen.io</a> (non serve registrazione per le prove rapide).</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Codice HTML/JS</h3>
+                        <p class="text-sm text-gray-600">Incolla questo codice nella sezione HTML. Simula una nuova funzionalità ("Chat Support") nascosta da un flag.</p>
+                        <div class="code-snippet">
+<!-- Configurazione Feature Flag (Simulata dal backend) -->
+<script>
+  const featureFlags = {
+    enableNewChat: false // CAMBIA QUESTO IN true PER ATTIVARE
+  };
+</script>
+
+<!-- Interfaccia Utente -->
+<div style="font-family: sans-serif; padding: 20px;">
+  <h1>Applicazione Web v2.0</h1>
+  <p>Benvenuto utente.</p>
+  
+  <!-- Nuova Feature -->
+  <div id="chat-widget" style="display: none; background: #e0f2fe; padding: 10px; border: 1px solid blue;">
+    💬 Supporto Chat Live (BETA)
+  </div>
+</div>
+
+<script>
+  // Logica di controllo
+  if (featureFlags.enableNewChat) {
+    document.getElementById('chat-widget').style.display = 'block';
+  }
+</script></div>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Toggle Runtime</h3>
+                        <p class="text-sm text-gray-600">Osserva che la chat non si vede. Ora cambia <code>enableNewChat: false</code> in <code>true</code> nel codice e attendi il refresh automatico. La chat appare. <br><em>Concetto chiave:</em> Hai rilasciato il codice (era già lì), ma hai attivato la feature solo cambiando la configurazione, separando il Deploy dal Release.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAB 3.2 -->
+        <div class="lab-card day3-border">
+            <div class="lab-header">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Lab 3.2: Value Stream Mapping (VSM)</h2>
+                    <p class="text-gray-500 text-sm mt-1">Visualizzazione del processo End-to-End per trovare sprechi</p>
+                </div>
+                <span class="tool-badge"><i class="fas fa-pencil-alt mr-1"></i> Excalidraw</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex">
+                    <div class="step-circle">1</div>
+                    <div>
+                        <h3 class="font-bold">Accesso alla Whiteboard</h3>
+                        <p class="text-sm text-gray-600">Vai su <a href="https://excalidraw.com" target="_blank" class="text-blue-600 underline">Excalidraw.com</a> (lavagna virtuale gratuita, nessuna registrazione).</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">2</div>
+                    <div>
+                        <h3 class="font-bold">Mappatura Stato Corrente</h3>
+                        <p class="text-sm text-gray-600">Disegna 5 rettangoli in fila orizzontale collegati da frecce: <br><strong>Richiesta Cliente -> Sviluppo -> QA Manuale -> Approvazione Sicurezza -> Deploy</strong>.</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">3</div>
+                    <div>
+                        <h3 class="font-bold">Aggiunta Dati (Lead Time & Process Time)</h3>
+                        <p class="text-sm text-gray-600">Sotto ogni rettangolo scrivi due valori:
+                        <br>- <strong>PT (Process Time):</strong> Tempo effettivo di lavoro (es. Sviluppo: 4 ore).
+                        <br>- <strong>LT (Lead Time):</strong> Tempo totale inclusa l'attesa (es. Sviluppo: 2 giorni perché lo sviluppatore era occupato).</p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="step-circle">4</div>
+                    <div>
+                        <h3 class="font-bold">Identificazione Waste</h3>
+                        <p class="text-sm text-gray-600">Cerca lo step con il divario più grande tra PT e LT (solitamente QA Manuale o Approvazione). Cerchialo in rosso. Quello è il tuo collo di bottiglia da automatizzare nel prossimo sprint.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="text-center text-gray-500 mt-12 mb-6 text-sm">
+        <p>Creato per il corso DevOps Master - Esercitazioni Zero-Install</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lab: Java CI/CD Pipeline Challenge</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --accent: #f778ba; /* Pink for Java/Maven vibe */
+      --link: #58a6ff;
+      --code-bg: #0d1117;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1, h2, h3 { color: #fff; }
+    h1 { border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+    h2 { color: var(--accent); margin-top: 40px; }
+    
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    pre {
+      background: var(--code-bg);
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.9em; color: #ffa657; }
+    
+    .todo-block {
+      background: rgba(247, 120, 186, 0.1);
+      border-left: 4px solid var(--accent);
+      padding: 15px;
+      margin: 15px 0;
+    }
+    
+    .hint {
+      font-size: 0.9rem;
+      color: #8b949e;
+      margin-top: 5px;
+    }
+    
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #238636;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>☕ Lab: Java CI/CD Pipeline Challenge</h1>
+      <p>Obiettivo: Costruire una pipeline di build e test per un'applicazione Java Maven da zero.</p>
+      <p><span class="badge">Tempo stimato: 45 min</span> <span class="badge" style="background:#1f6feb">GitHub Codespaces</span></p>
+    </header>
+
+    <div class="card">
+      <h3>Scenario</h3>
+      <p>Sei il DevOps Engineer di un team Java. Gli sviluppatori hanno bisogno di una pipeline che:</p>
+      <ol>
+        <li>Compili il codice ad ogni push.</li>
+        <li>Esegua gli Unit Test.</li>
+        <li>Crei il pacchetto JAR (artifact) solo se i test passano.</li>
+        <li>Salvi il JAR generato in modo che possa essere scaricato.</li>
+      </ol>
+    </div>
+
+    <h2>Fase 1: Setup dell'Ambiente (5 min)</h2>
+    <p>Non perderemo tempo a scrivere codice Java complesso. Useremo uno script per generare un progetto Maven standard.</p>
+    
+    <div class="card">
+      <h4>Istruzioni:</h4>
+      <ol>
+        <li>Crea una nuova repository vuota su GitHub chiamata <code>java-pipeline-lab</code>.</li>
+        <li>Avvia un <strong>Codespace</strong> (pulsante verde Code > Codespaces > Create codespace on main).</li>
+        <li>Nel terminale del Codespace, copia e incolla questo blocco intero per generare l'app:</li>
+      </ol>
+      <pre><code># 1. Genera struttura directory
+mkdir -p src/main/java/com/example
+mkdir -p src/test/java/com/example
+
+# 2. Crea il POM.xml (Project Object Model)
+cat > pom.xml << 'EOF'
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+EOF
+
+# 3. Crea App.java
+cat > src/main/java/com/example/App.java << 'EOF'
+package com.example;
+public class App {
+    public String getGreeting() {
+        return "Hello DevOps World!";
+    }
+    public static void main(String[] args) {
+        System.out.println(new App().getGreeting());
+    }
+}
+EOF
+
+# 4. Crea AppTest.java
+cat > src/test/java/com/example/AppTest.java << 'EOF'
+package com.example;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class AppTest {
+    @Test public void testAppHasAGreeting() {
+        App classUnderTest = new App();
+        assertNotNull("app should have a greeting", classUnderTest.getGreeting());
+    }
+}
+EOF
+
+# Verifica che funzioni localmente
+mvn test</code></pre>
+      <p>Se vedi <code>BUILD SUCCESS</code>, sei pronto per la pipeline.</p>
+    </div>
+
+    <h2>Fase 2: La Sfida Pipeline (30 min)</h2>
+    <p>Ora devi creare il file di configurazione della pipeline. Crea il file <code>.github/workflows/maven.yml</code>.</p>
+    
+    <div class="todo-block">
+      <h3>🛠️ Il tuo compito: Completa il file YAML</h3>
+      <p>Copia lo scheletro qui sotto nel tuo file <code>maven.yml</code> e riempi le parti mancanti segnate con <code># ???</code>.</p>
+    </div>
+
+    <pre><code class="language-yaml">name: Java CI with Maven
+
+on:
+  # ??? 1. Configura il trigger:
+  # La pipeline deve partire quando si fa push sul branch 'main'
+  # e quando si apre una pull_request verso 'main'.
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # ??? 2. Su quale sistema operativo deve girare?
+    # Suggerimento: usa l'ultima versione di Ubuntu disponibile su GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step A: Checkout del codice
+    - uses: actions/checkout@v4
+
+    # Step B: Setup di Java
+    # ??? 3. Configura l'azione 'actions/setup-java@v4'
+    # Devi specificare:
+    # - java-version: '17'
+    # - distribution: 'temurin' (o 'zulu', 'adopt')
+    # - cache: 'maven' (Bonus: questo velocizza le build future!)
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    # Step C: Build e Test
+    # ??? 4. Scrivi il comando Maven per compilare ed eseguire i test.
+    # Il comando standard è 'mvn package' (o 'mvn -B package' per batch mode)
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    # Step D: Salvataggio Artifact (Il JAR)
+    # ??? 5. Usa l'azione 'actions/upload-artifact@v4'
+    # Devi caricare il file che Maven ha creato nella cartella 'target/*.jar'
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-java-app
+        path: target/*.jar</code></pre>
+
+    <div class="card">
+      <h4>💡 Aiuti e Risorse</h4>
+      <ul>
+        <li>Cerca su Google: "GitHub Actions setup java"</li>
+        <li>Cerca su Google: "GitHub Actions upload artifact"</li>
+        <li>Ricorda che l'indentazione in YAML è fondamentale (2 spazi).</li>
+      </ul>
+    </div>
+
+    <h2>Fase 3: Verifica</h2>
+    <ol>
+      <li>Fai commit e push del file <code>.github/workflows/maven.yml</code>.</li>
+      <li>Vai nel tab <strong>Actions</strong> della tua repository GitHub.</li>
+      <li>Dovresti vedere un workflow in esecuzione.</li>
+      <li>Se diventa verde ✅:
+        <ul>
+          <li>Clicca sul run del workflow.</li>
+          <li>Scorri in basso alla sezione <strong>Artifacts</strong>.</li>
+          <li>Dovresti vedere <code>my-java-app</code> pronto per il download.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <div style="text-align: center; margin-top: 50px;">
+      <p>Hai provato a risolvere tutto? Solo se sei bloccato o hai finito:</p>
+      <a href="solution.html" style="background: #30363d; padding: 10px 20px; border-radius: 6px; color: white;">Apri la Soluzione</a>
+    </div>
+  </div>
+</body>
+</html>

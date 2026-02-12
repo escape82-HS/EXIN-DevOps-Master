@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab: DORA Metrics Analysis</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --primary: #5e35b1; /* Deep Purple */
+            --secondary: #00897b; /* Teal */
+            --danger: #e53935;
+            --table-border: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        h2 { color: var(--secondary); border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-top: 40px; }
+        
+        .scenario-box {
+            background: #e8eaf6;
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--table-border);
+        }
+
+        th { background-color: #f5f5f5; font-weight: bold; }
+        tr:hover { background-color: #f9f9f9; }
+
+        .tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+        }
+        .tag-feat { background-color: #1e88e5; }
+        .tag-bug { background-color: #e53935; }
+        .tag-success { background-color: #43a047; color: white; }
+        .tag-fail { background-color: #e53935; color: white; }
+
+        .exercise-area {
+            background-color: #fff3e0;
+            border: 1px dashed #ff9800;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .solution-toggle {
+            cursor: pointer;
+            color: var(--primary);
+            text-decoration: underline;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .hidden-solution {
+            display: none;
+            margin-top: 15px;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function toggleSolution(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "none" || x.style.display === "") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📊 Lab: Implementare le Metriche DORA</h1>
+        <p>Impara a misurare le performance del tuo team DevOps analizzando dati reali.</p>
+    </header>
+
+    <div class="scenario-box">
+        <h3>🏢 Scenario: "PizzaDev Startup"</h3>
+        <p>Sei appena stato assunto come DevOps Lead alla "PizzaDev". Il CTO si lamenta che "siamo lenti" e "rompiamo tutto". 
+        Hai estratto i dati dell'ultimo mese (Febbraio) dai sistemi (Jira e Git).
+        Il tuo compito è calcolare le 4 metriche DORA per capire dove sta il problema.</p>
+    </div>
+
+    <div class="step">
+        <h2>📂 Parte 1: Il Dataset (Backlog & Log Eventi)</h2>
+        <p>Ecco cosa è successo a Febbraio. Analizza attentamente questa tabella. Ogni riga rappresenta una feature o un fix che è arrivato in produzione.</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Ticket</th>
+                    <th>Tipo</th>
+                    <th>Data Commit (Inizio Lavoro)</th>
+                    <th>Data Deploy (In Produzione)</th>
+                    <th>Esito Deploy</th>
+                    <th>Tempo per Ripristino (Se fallito)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T-101</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>01 Feb, 09:00</td>
+                    <td>03 Feb, 09:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>T-102</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>05 Feb, 10:00</td>
+                    <td>05 Feb, 14:00</td>
+                    <td><span class="tag tag-fail">Fallito (Bug Critico)</span></td>
+                    <td>4 Ore</td>
+                </tr>
+                <tr>
+                    <td>T-103</td>
+                    <td><span class="tag tag-bug">Hotfix</span></td>
+                    <td>06 Feb, 09:00</td>
+                    <td>06 Feb, 10:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>T-104</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>10 Feb, 09:00</td>
+                    <td>17 Feb, 09:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>T-105</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>18 Feb, 09:00</td>
+                    <td>18 Feb, 11:00</td>
+                    <td><span class="tag tag-fail">Fallito (Down sito)</span></td>
+                    <td>1 Ora</td>
+                </tr>
+                <tr>
+                    <td>T-106</td>
+                    <td><span class="tag tag-bug">Hotfix</span></td>
+                    <td>18 Feb, 12:00</td>
+                    <td>18 Feb, 13:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>T-107</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>20 Feb, 09:00</td>
+                    <td>25 Feb, 09:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>T-108</td>
+                    <td><span class="tag tag-feat">Feature</span></td>
+                    <td>26 Feb, 09:00</td>
+                    <td>28 Feb, 09:00</td>
+                    <td><span class="tag tag-success">Successo</span></td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="step">
+        <h2>🧮 Parte 2: Calcolo delle Metriche</h2>
+        <p>Prendi carta e penna (o Excel) e calcola i seguenti valori basandoti sulla tabella sopra.</p>
+
+        <div class="metric-card">
+            <h3>1. Deployment Frequency (DF)</h3>
+            <p><em>Quanto spesso rilasciamo codice in produzione con successo?</em></p>
+            <div class="exercise-area">
+                <strong>Domanda:</strong> Quanti deploy totali sono stati fatti in questo mese (28 giorni)? Qual è la media (es. settimanale)?
+                <br><br>
+                <span class="solution-toggle" onclick="toggleSolution('sol-df')">👁️ Mostra Soluzione</span>
+                <div id="sol-df" class="hidden-solution">
+                    <strong>Calcolo:</strong> Ci sono 8 righe nella tabella = 8 Deploy totali nel mese.<br>
+                    <strong>Frequenza:</strong> 8 deploy / 4 settimane = <strong>2 Deploy a settimana</strong>.<br>
+                    <strong>Livello DORA:</strong> Medium/High (Stiamo rilasciando regolarmente).
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <h3>2. Lead Time for Changes (LT)</h3>
+            <p><em>Quanto tempo passa dal "Commit" al "Deploy in Produzione"?</em></p>
+            <div class="exercise-area">
+                <strong>Domanda:</strong> Calcola il tempo medio trascorso tra la colonna "Data Commit" e "Data Deploy" per tutti i ticket.
+                <br><em>Suggerimento: T-101 ha impiegato 48 ore (2 giorni). T-102 ha impiegato 4 ore.</em>
+                <br><br>
+                <span class="solution-toggle" onclick="toggleSolution('sol-lt')">👁️ Mostra Soluzione</span>
+                <div id="sol-lt" class="hidden-solution">
+                    <strong>Calcolo:</strong>
+                    <ul>
+                        <li>T-101: 48h</li>
+                        <li>T-102: 4h</li>
+                        <li>T-103: 1h</li>
+                        <li>T-104: 168h (7 giorni!)</li>
+                        <li>T-105: 2h</li>
+                        <li>T-106: 1h</li>
+                        <li>T-107: 120h (5 giorni)</li>
+                        <li>T-108: 48h</li>
+                    </ul>
+                    Totale ore: 392h. Diviso 8 ticket = <strong>49 ore (circa 2 giorni)</strong>.<br>
+                    <strong>Analisi:</strong> La media è buona, ma T-104 e T-107 sono anomalie che alzano la media. Perché ci hanno messo così tanto? (Code review lenta? Test manuali?)
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <h3>3. Change Failure Rate (CFR)</h3>
+            <p><em>Quale percentuale di deploy ha causato un problema in produzione?</em></p>
+            <div class="exercise-area">
+                <strong>Domanda:</strong> Conta i deploy falliti rispetto al totale.
+                <br><br>
+                <span class="solution-toggle" onclick="toggleSolution('sol-cfr')">👁️ Mostra Soluzione</span>
+                <div id="sol-cfr" class="hidden-solution">
+                    <strong>Calcolo:</strong>
+                    Totale Deploy: 8.<br>
+                    Deploy Falliti (Esito "Fallito"): 2 (T-102 e T-105).<br>
+                    Formula: (2 / 8) * 100 = <strong>25%</strong>.<br>
+                    <strong>Analisi:</strong> 25% è <strong>MOLTO ALTO</strong>. Un rilascio su quattro rompe la produzione. Questo è il problema principale del team.
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <h3>4. Mean Time to Restore (MTTR)</h3>
+            <p><em>Quando qualcosa si rompe, quanto velocemente lo ripariamo?</em></p>
+            <div class="exercise-area">
+                <strong>Domanda:</strong> Prendi solo i deploy falliti e calcola la media del "Tempo per Ripristino".
+                <br><br>
+                <span class="solution-toggle" onclick="toggleSolution('sol-mttr')">👁️ Mostra Soluzione</span>
+                <div id="sol-mttr" class="hidden-solution">
+                    <strong>Calcolo:</strong>
+                    Incidente T-102: 4 ore.<br>
+                    Incidente T-105: 1 ora.<br>
+                    Media: (4 + 1) / 2 = <strong>2.5 Ore</strong>.<br>
+                    <strong>Analisi:</strong> 2.5 ore è un tempo accettabile, ma migliorabile. Significa che il team è reattivo, ma forse manca di automazione nel rollback.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>🚀 Parte 3: Piano d'Azione (DevOps Strategy)</h2>
+        <p>Ora che hai i numeri, devi proporre delle soluzioni. Basandoti sui dati sopra, quale azione ha la priorità?</p>
+        
+        <table style="border: 2px solid var(--primary);">
+            <tr>
+                <td><strong>Problema Rilevato</strong></td>
+                <td><strong>Change Failure Rate (CFR) al 25%</strong>. Troppo alto. Stiamo rilasciando bug troppo spesso.</td>
+            </tr>
+            <tr>
+                <td><strong>Causa Ipotetica</strong></td>
+                <td>Mancanza di test automatici o ambiente di staging non simile alla produzione.</td>
+            </tr>
+            <tr>
+                <td><strong>Soluzione Tecnica</strong></td>
+                <td>
+                    1. Implementare una pipeline di CI con Unit Test obbligatori (vedi Lab precedente).<br>
+                    2. Introdurre <strong>Canary Deployments</strong> (rilasciare solo al 10% degli utenti prima).
+                </td>
+            </tr>
+        </table>
+
+        <h3>Esercizio Finale:</h3>
+        <p>Immagina che il Ticket T-104 (quello che ci ha messo 7 giorni) fosse bloccato perché "Il QA manager era in ferie e doveva approvare manualmente".</p>
+        <p><strong>Domanda:</strong> Come miglioreresti questo processo per ridurre il Lead Time?</p>
+        <p><em>Risposta suggerita: Automatizzare i test di regressione per rimuovere la necessità di approvazione manuale per modifiche a basso rischio.</em></p>
+    </div>
+
+    <footer>
+        <p>Generato da Monica AI - DORA Metrics Lab</p>
+    </footer>
+</div>
+
+</body>
+</html>

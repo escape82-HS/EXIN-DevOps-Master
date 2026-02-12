@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevOps Master — Giorno 1 — Laboratorio (1 ora)</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121a2b;
+      --text:#e8eefc;
+      --muted:#a9b7d6;
+      --accent:#7aa2ff;
+      --ok:#3ddc97;
+      --warn:#ffd166;
+      --bad:#ff5c7a;
+      --border:rgba(255,255,255,.10);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:linear-gradient(180deg, #070c16 0%, var(--bg) 55%, #060a12 100%);
+      color:var(--text);
+      font-family:var(--sans);
+      line-height:1.45;
+    }
+    header{
+      padding:28px 18px 10px;
+      max-width:1060px;
+      margin:0 auto;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:1.55rem;
+      letter-spacing:.2px;
+    }
+    .subtitle{color:var(--muted); margin:0 0 14px;}
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0;}
+    .chip{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      padding:6px 10px;
+      border-radius:999px;
+      color:var(--muted);
+      font-size:.88rem;
+    }
+    main{
+      max-width:1060px;
+      margin:0 auto;
+      padding:10px 18px 40px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns: 1fr;}
+    }
+    section{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px 14px;
+    }
+    section h2{
+      font-size:1.08rem;
+      margin:0 0 10px;
+    }
+    section h3{
+      font-size:1.0rem;
+      margin:14px 0 8px;
+      color:#d9e5ff;
+    }
+    p{margin:0 0 10px; color:var(--text)}
+    ul{margin:8px 0 10px 20px; color:var(--text)}
+    li{margin:4px 0}
+    .muted{color:var(--muted)}
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 740px){
+      .grid2{grid-template-columns:1fr;}
+    }
+    .callout{
+      border:1px solid var(--border);
+      background:rgba(122,162,255,.08);
+      border-left:4px solid var(--accent);
+      padding:10px 12px;
+      border-radius:12px;
+      color:var(--text);
+      margin:10px 0;
+    }
+    .warn{
+      background:rgba(255,209,102,.10);
+      border-left-color:var(--warn);
+    }
+    .ok{
+      background:rgba(61,220,151,.10);
+      border-left-color:var(--ok);
+    }
+    code, pre{
+      font-family:var(--mono);
+    }
+    pre{
+      margin:10px 0 12px;
+      padding:12px;
+      background:#0a0f1c;
+      border:1px solid var(--border);
+      border-radius:12px;
+      overflow:auto;
+      color:#e8eefc;
+    }
+    .small{font-size:.92rem}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:8px 0 12px;
+      font-size:.95rem;
+    }
+    th, td{
+      border-bottom:1px solid var(--border);
+      padding:8px 6px;
+      vertical-align:top;
+    }
+    th{color:#d9e5ff; text-align:left; font-weight:600}
+    .kpi{
+      display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 0;
+    }
+    .kpi .box{
+      flex:1 1 160px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:14px;
+      padding:10px 10px;
+    }
+    .kpi .label{color:var(--muted); font-size:.86rem}
+    .kpi .value{font-size:1.05rem; margin-top:2px}
+    .btns{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0}
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      font-family:var(--sans);
+    }
+    button:hover{background:rgba(255,255,255,.07)}
+    .checklist label{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:8px 8px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      border-radius:12px;
+      margin:8px 0;
+    }
+    .checklist input{margin-top:3px}
+    footer{
+      max-width:1060px;
+      margin:0 auto;
+      padding:0 18px 30px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:.85rem;
+    }
+    .split{
+      display:flex; gap:12px; flex-wrap:wrap;
+    }
+    .split > div{flex:1 1 260px}
+    .hr{height:1px; background:var(--border); margin:12px 0;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Laboratorio (1 ora) — Giorno 1: Fondamenti CI/CD</h1>
+    <p class="subtitle">Obiettivo: vivere una mini-pipeline “commit → build → test → artifact → deploy (simulato)” e capire i concetti chiave (CI, CD, feedback, fail-fast, artifact promotion).</p>
+    <div class="chips" aria-label="metadati laboratorio">
+      <span class="chip">Durata: 60 minuti</span>
+      <span class="chip">Livello: base</span>
+      <span class="chip">Focus: CI/CD + feedback</span>
+      <span class="chip">Output: checklist + mini pipeline</span>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Scenario (semplice ma realistico)</h2>
+      <p>Hai un micro-servizio “Hello DevOps” (un’app web minimale) e vuoi:</p>
+      <ul>
+        <li>integrare frequentemente (CI) con build e test automatici</li>
+        <li>produrre un <em>artifact</em> versionato (non nel VCS) e distribuibile</li>
+        <li>simulare un deploy automatico su “staging” (CDelivery) e, opzionalmente, su “production” (CDeployment)</li>
+      </ul>
+      <div class="callout">
+        <strong>Nota didattica:</strong> il laboratorio è tool-agnostic. Se in aula avete GitHub/GitLab/Jenkins, applicate gli step con lo strumento disponibile.
+      </div>
+
+      <h3>Prerequisiti</h3>
+      <div class="grid2">
+        <div>
+          <p class="muted"><strong>Minimi (consigliati):</strong></p>
+          <ul>
+            <li>Git installato</li>
+            <li>Un runtime a scelta: <span class="pill">Node.js</span> oppure <span class="pill">Python</span> oppure <span class="pill">Java/.NET</span></li>
+            <li>Accesso a una repo (locale o remota)</li>
+          </ul>
+        </div>
+        <div>
+          <p class="muted"><strong>Se avete CI remoto:</strong></p>
+          <ul>
+            <li>Account su GitHub/GitLab</li>
+            <li>Permesso di creare una pipeline (workflow)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Struttura 60 minuti</h3>
+      <table aria-label="timeline laboratorio">
+        <thead>
+          <tr>
+            <th>Tempo</th>
+            <th>Attività</th>
+            <th>Risultato atteso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>0–10'</strong></td>
+            <td>Setup repo + baseline</td>
+            <td>Repo pronta, branch main, primo commit</td>
+          </tr>
+          <tr>
+            <td><strong>10–30'</strong></td>
+            <td>CI: build + test + fail-fast</td>
+            <td>Pipeline che fallisce su test rotti e notifica il team</td>
+          </tr>
+          <tr>
+            <td><strong>30–45'</strong></td>
+            <td>Artifact: packaging + versioning</td>
+            <td>Artifact generato e pubblicato (registry/storage)</td>
+          </tr>
+          <tr>
+            <td><strong>45–55'</strong></td>
+            <td>CD: deploy simulato su staging + rollback</td>
+            <td>Deploy automatico + procedura di rollback “one-command”</td>
+          </tr>
+          <tr>
+            <td><strong>55–60'</strong></td>
+            <td>Debrief + metriche</td>
+            <td>Checklist completata + 2 miglioramenti identificati</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="hr"></div>
+
+      <h2>Parte A — Setup rapido (0–10')</h2>
+      <p><strong>Step A1:</strong> crea una repo e aggiungi una mini-app. Esempio con Node.js (puoi adattare a Python/Java/.NET).</p>
+      <pre><code># 1) Crea cartella e repo
+mkdir hello-devops &amp;&amp; cd hello-devops
+git init
+
+# 2) Mini app (Node)
+npm init -y
+npm i
+
+# 3) Crea file app
+mkdir -p src
+cat &gt; src/app.js &lt;&lt; 'EOF'
+const http = require('http');
+const port = process.env.PORT || 3000;
+
+const server = http.createServer((req, res) =&gt; {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello DevOps\\n');
+});
+
+server.listen(port, () =&gt; console.log('Listening on', port));
+EOF
+
+# 4) Script start
+node -e "const p=require('./package.json'); p.scripts=p.scripts||{}; p.scripts.start='node src/app.js'; require('fs').writeFileSync('package.json', JSON.stringify(p,null,2));"
+
+git add .
+git commit -m "chore: initial hello service"</code></pre>
+
+      <p class="muted small">Se non puoi usare Node: crea un “hello world” equivalente (es. Flask in Python) e un test minimale.</p>
+
+      <div class="callout warn">
+        <strong>Richiamo concettuale:</strong> la CI richiede <em>version control</em> + build riproducibile + test automatici. La velocità conta: target commit stage &lt; 10 minuti.
+      </div>
+
+      <h2>Parte B — CI: build &amp; test con fail-fast (10–30')</h2>
+      <p><strong>Step B1:</strong> aggiungi un test minimale che valida una regola semplice (es. risposta non vuota / stringa attesa).</p>
+      <pre><code># Aggiungi un test semplice (Node: test con assert)
+mkdir -p test
+cat &gt; test/smoke.test.js &lt;&lt; 'EOF'
+const assert = require('assert');
+
+// Test "banale": serve solo a dimostrare la pipeline CI
+// In un progetto reale: unit test su funzioni / componenti, non su stringhe statiche
+assert.strictEqual('Hello DevOps\\n'.includes('DevOps'), true);
+console.log('OK - smoke test');
+EOF
+
+node -e "const p=require('./package.json'); p.scripts=p.scripts||{}; p.scripts.test='node test/smoke.test.js'; require('fs').writeFileSync('package.json', JSON.stringify(p,null,2));"
+
+npm test
+git add .
+git commit -m "test: add smoke test"</code></pre>
+
+      <p><strong>Step B2:</strong> crea una pipeline CI (Pipeline as Code). Scegli uno dei template qui sotto.</p>
+
+      <div class="split">
+        <div>
+          <h3>Opzione 1 — GitHub Actions (consigliata)</h3>
+          <pre><code>mkdir -p .github/workflows
+cat &gt; .github/workflows/ci.yml &lt;&lt; 'EOF'
+name: ci
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm i
+      - run: npm test
+EOF
+
+git add .github/workflows/ci.yml
+git commit -m "ci: add pipeline build+test"</code></pre>
+        </div>
+        <div>
+          <h3>Opzione 2 — GitLab CI</h3>
+          <pre><code>cat &gt; .gitlab-ci.yml &lt;&lt; 'EOF'
+stages: [test]
+
+test:
+  image: node:20
+  stage: test
+  script:
+    - npm ci || npm i
+    - npm test
+EOF
+
+git add .gitlab-ci.yml
+git commit -m "ci: add gitlab pipeline build+test"</code></pre>
+        </div>
+      </div>
+
+      <p><strong>Step B3 (fail-fast):</strong> rompi volutamente il test e osserva il fallimento della pipeline.</p>
+      <pre><code># Esempio: cambia 'DevOps' in 'DEVOPS' nel test e fai commit
+sed -i.bak "s/DevOps/DEVOPS/" test/smoke.test.js || true
+
+git add test/smoke.test.js
+git commit -m "test: intentionally break to validate fail-fast"
+git push</code></pre>
+
+      <p><strong>Step B4:</strong> ripara il test e ripusha. La pipeline deve tornare verde.</p>
+      <pre><code>git checkout -- test/smoke.test.js
+git commit -am "test: fix broken build quickly"
+git push</code></pre>
+
+      <div class="callout ok">
+        <strong>Regola CI:</strong> “se la build è rotta, si fixa subito”. È un accordo di team, non solo una scelta tecnica.
+      </div>
+
+      <h2>Parte C — Artifact: packaging e versioning (30–45')</h2>
+      <p>Obiettivo: generare un artifact riproducibile e “promuovibile” tra ambienti.</p>
+      <p><strong>Step C1:</strong> aggiungi uno script di packaging che produce un file zip con l’app.</p>
+      <pre><code># Crea cartella dist e zip "artifact"
+mkdir -p dist
+
+cat &gt; scripts_package.sh &lt;&lt; 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="$(node -p "require('./package.json').version")"
+ARTIFACT="dist/hello-devops-${VERSION}.zip"
+
+rm -f "$ARTIFACT"
+zip -r "$ARTIFACT" src package.json package-lock.json test &gt; /dev/null 2&gt;&amp;1 || zip -r "$ARTIFACT" src package.json test &gt; /dev/null
+echo "Created artifact: $ARTIFACT"
+EOF
+
+chmod +x scripts_package.sh
+./scripts_package.sh
+
+git add dist scripts_package.sh
+git commit -m "build: add simple packaging to create artifact"</code></pre>
+
+      <div class="callout warn">
+        <strong>Nota importante (best practice):</strong> evitare di versionare <em>binary output</em> nel VCS. Gli artifact dovrebbero stare in un artifact repository/registry (o in CI come “build artifacts”), perché sono grandi, cambiano ad ogni build e si rigenerano dal sorgente.
+      </div>
+
+      <p><strong>Step C2:</strong> estendi la pipeline per pubblicare l’artifact come output della build (es. GitHub Actions artifacts).</p>
+      <pre><code># Aggiungi step (GitHub Actions) dopo i test:
+# - run: ./scripts_package.sh
+# - uses: actions/upload-artifact@v4
+#   with:
+#     name: hello-devops-artifact
+#     path: dist/*.zip</code></pre>
+      <p class="muted small">Se usi GitLab: usa <code>artifacts:</code> nel job CI per salvare <code>dist/*.zip</code>.</p>
+
+      <h2>Parte D — CD: deploy simulato + rollback (45–55')</h2>
+      <p>Simuliamo <strong>Continuous Delivery</strong>: deploy automatico su “staging” (cartella o server di test). Il deploy in “production” resta una decisione (manuale) oppure un job separato.</p>
+
+      <p><strong>Step D1:</strong> crea uno script di deploy “staging” (simulato su filesystem).</p>
+      <pre><code>cat &gt; scripts_deploy_staging.sh &lt;&lt; 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="$(node -p "require('./package.json').version")"
+ARTIFACT="dist/hello-devops-${VERSION}.zip"
+STAGING_DIR="staging/current"
+RELEASES_DIR="staging/releases"
+RELEASE_DIR="${RELEASES_DIR}/${VERSION}"
+
+if [[ ! -f "$ARTIFACT" ]]; then
+  echo "Artifact not found: $ARTIFACT"
+  exit 1
+fi
+
+mkdir -p "$RELEASE_DIR" "$STAGING_DIR" "$RELEASES_DIR"
+rm -rf "$RELEASE_DIR/app" &amp;&amp; mkdir -p "$RELEASE_DIR/app"
+unzip -q "$ARTIFACT" -d "$RELEASE_DIR/app"
+
+# "Switch" atomico (simulato): aggiorna symlink current - se non disponibile, copia
+rm -rf "$STAGING_DIR" &amp;&amp; mkdir -p "staging"
+ln -s "../releases/${VERSION}/app" "$STAGING_DIR" 2&gt;/dev/null || cp -R "$RELEASE_DIR/app" "$STAGING_DIR"
+
+echo "Deployed to staging: version ${VERSION}"
+EOF
+
+chmod +x scripts_deploy_staging.sh
+./scripts_deploy_staging.sh
+
+git add scripts_deploy_staging.sh
+git commit -m "cd: add staging deploy script (simulated)"</code></pre>
+
+      <p><strong>Step D2:</strong> aggiungi uno script di rollback (ritorna alla versione precedente disponibile).</p>
+      <pre><code>cat &gt; scripts_rollback_staging.sh &lt;&lt; 'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+RELEASES_DIR="staging/releases"
+STAGING_DIR="staging/current"
+
+if [[ ! -d "$RELEASES_DIR" ]]; then
+  echo "No releases directory found."
+  exit 1
+fi
+
+PREV="$(ls -1 "$RELEASES_DIR" 2&gt;/dev/null | sort -V | tail -n 2 | head -n 1)"
+if [[ -z "${PREV:-}" ]]; then
+  echo "No previous release available to roll back to."
+  exit 1
+fi
+
+rm -rf "$STAGING_DIR" &amp;&amp; mkdir -p "staging"
+ln -s "../releases/${PREV}/app" "$STAGING_DIR" 2&gt;/dev/null || cp -R "$RELEASES_DIR/$PREV/app" "$STAGING_DIR"
+
+echo "Rolled back staging to version ${PREV}"
+EOF
+
+chmod +x scripts_rollback_staging.sh
+
+git add scripts_rollback_staging.sh
+git commit -m "cd: add staging rollback script (simulated)"</code></pre>
+
+      <p><strong>Step D3:</strong> collega lo script alla pipeline come job “deploy-staging” automatico dopo i test (solo su main).</p>
+      <pre><code># Idea (GitHub Actions):
+# jobs:
+#   build-test: ...
+#   deploy-staging:
+#     needs: build-test
+#     if: github.ref == 'refs/heads/main'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - ... setup runtime ...
+#       - run: npm ci || npm i
+#       - run: npm test
+#       - run: ./scripts_package.sh
+#       - run: ./scripts_deploy_staging.sh</code></pre>
+
+      <div class="callout">
+        <strong>Collega al contenuto teorico:</strong> questo è “Delivery vs Deployment”. Qui stiamo automatizzando fino a staging; il passaggio a prod può essere un job manuale (approvazione) o automatico se maturità, monitoring e rollback sono solidi.
+      </div>
+
+      <h2>Parte E — Debrief e misure (55–60')</h2>
+      <p>Rispondi in 2 minuti (a voce o in chat):</p>
+      <ul>
+        <li>Qual è stato il feedback più utile ottenuto dalla pipeline (verde/rosso, tempo, log)?</li>
+        <li>Quale singolo miglioramento farebbe scendere il lead time più rapidamente?</li>
+      </ul>
+
+      <div class="kpi" aria-label="mini metriche da osservare">
+        <div class="box">
+          <div class="label">Tempo commit → feedback</div>
+          <div class="value">Target: &lt; 10 min</div>
+        </div>
+        <div class="box">
+          <div class="label">Broken build fix time</div>
+          <div class="value">Target: “subito”</div>
+        </div>
+        <div class="box">
+          <div class="label">Riproducibilità build</div>
+          <div class="value">Stesso output ogni run</div>
+        </div>
+        <div class="box">
+          <div class="label">Rollback</div>
+          <div class="value">One-command</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Checklist (da completare)</h2>
+      <p class="muted small">Spunta durante l’esecuzione. Puoi scaricare lo stato in fondo.</p>
+      <div class="checklist" id="checklist">
+        <label><input type="checkbox" data-id="vc"> <span><strong>Version control</strong> attivo: repo Git inizializzata e commit effettuati</span></label>
+        <label><input type="checkbox" data-id="ci"> <span><strong>CI</strong> configurata: pipeline “build + test” su push/PR</span></label>
+        <label><input type="checkbox" data-id="failfast"> <span><strong>Fail-fast</strong> verificato: test rotto → pipeline rossa → fix rapido</span></label>
+        <label><input type="checkbox" data-id="artifact"> <span><strong>Artifact</strong> creato (zip o equivalente) e salvato come output della build</span></label>
+        <label><input type="checkbox" data-id="cd"> <span><strong>Deploy staging</strong> simulato automatico dopo la CI (main)</span></label>
+        <label><input type="checkbox" data-id="rollback"> <span><strong>Rollback</strong> disponibile e testato (simulato)</span></label>
+      </div>
+
+      <div class="btns">
+        <button type="button" id="saveBtn">Salva stato checklist</button>
+        <button type="button" id="loadBtn">Ripristina stato</button>
+        <button type="button" id="resetBtn">Reset</button>
+        <button type="button" id="exportBtn">Esporta report (testo)</button>
+      </div>
+
+      <h3>Domande “da esame” (collegamento concetti)</h3>
+      <ul class="small">
+        <li>Perché in genere <strong>non</strong> si versionano i binary output nel VCS?</li>
+        <li>Qual è la differenza tra <strong>Continuous Delivery</strong> e <strong>Continuous Deployment</strong> nel processo di rilascio?</li>
+        <li>Quali elementi rendono una build <strong>riproducibile</strong> e “self-contained”?</li>
+      </ul>
+
+      <h3>Estensioni (se avanza tempo o homework)</h3>
+      <ul class="small">
+        <li>Aggiungi un controllo di qualità (lint) prima dei test (fail-fast ancora più veloce).</li>
+        <li>Aggiungi una “quality gate” (es. coverage minima) nel commit stage.</li>
+        <li>Introduce un <em>feature flag</em> per simulare trunk-based development con feature incompleta.</li>
+      </ul>
+
+      <div class="callout warn small">
+        <strong>Anti-pattern da evitare:</strong> commit rari, build lenta (&gt; 30 min), build manuale, build rotta ignorata.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="hr"></div>
+    <p>
+      <strong>Deliverable del laboratorio:</strong> pipeline funzionante + artifact + deploy staging simulato + rollback + checklist esportata.
+    </p>
+    <p class="muted">
+      Suggerimento facilitatore: chiedi a 2 gruppi diversi di descrivere “cosa succede quando la build si rompe” e “che cosa significa promuovere lo stesso artifact tra stage”.
+    </p>
+  </footer>
+
+  <script>
+    (function(){
+      const key = "devops_master_day1_lab_checklist_v1";
+      const checklist = document.getElementById("checklist");
+      const boxes = Array.from(checklist.querySelectorAll("input[type=checkbox]"));
+
+      function snapshot(){
+        const state = {};
+        boxes.forEach(b => state[b.dataset.id] = b.checked);
+        return state;
+      }
+
+      function apply(state){
+        if(!state) return;
+        boxes.forEach(b => {
+          if(Object.prototype.hasOwnProperty.call(state, b.dataset.id)){
+            b.checked = !!state[b.dataset.id];
+          }
+        });
+      }
+
+      function reset(){
+        boxes.forEach(b => b.checked = false);
+      }
+
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        localStorage.setItem(key, JSON.stringify(snapshot()));
+        alert("Stato salvato nel browser (localStorage).");
+      });
+
+      document.getElementById("loadBtn").addEventListener("click", () => {
+        const raw = localStorage.getItem(key);
+        if(!raw){ alert("Nessuno stato salvato trovato."); return; }
+        apply(JSON.parse(raw));
+        alert("Stato ripristinato.");
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        reset();
+      });
+
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const state = snapshot();
+        const lines = [];
+        lines.push("DevOps Master — Giorno 1 — Laboratorio 1 ora — Report");
+        lines.push("------------------------------------------------------");
+        const items = [
+          ["vc", "Version control attivo"],
+          ["ci", "CI configurata (build+test)"],
+          ["failfast", "Fail-fast verificato (break/fix)"],
+          ["artifact", "Artifact creato e salvato"],
+          ["cd", "Deploy staging simulato"],
+          ["rollback", "Rollback disponibile e testato"]
+        ];
+        items.forEach(([id, label]) => {
+          lines.push(`${state[id] ? "[OK]" : "[  ]"} ${label}`);
+        });
+        const out = lines.join("\n");
+        navigator.clipboard?.writeText(out).then(() => {
+          alert("Report copiato negli appunti.");
+        }).catch(() => {
+          // fallback
+          const w = window.open("", "_blank");
+          w.document.write("<pre>"+ out.replaceAll("&","&amp;").replaceAll("<","&lt;") +"</pre>");
+          w.document.title = "Report Laboratorio";
+        });
+      });
+
+      // Auto-load se presente
+      try{
+        const raw = localStorage.getItem(key);
+        if(raw) apply(JSON.parse(raw));
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
