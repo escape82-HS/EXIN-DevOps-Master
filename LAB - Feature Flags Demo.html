@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Flags Demo Lab</title>
+    <!-- Tailwind CSS per lo stile veloce -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icone -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Transizioni fluide per l'effetto Dark Mode */
+        body, .card, .btn { transition: all 0.3s ease; }
+        
+        /* Stile personalizzato per il Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #10B981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10B981;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-4 md:p-8 font-sans" id="main-body">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- COLONNA 1: ADMIN PANEL (Il "Backend") -->
+        <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex items-center gap-2 mb-6 border-b pb-4">
+                    <i class="fa-solid fa-sliders text-gray-600"></i>
+                    <h2 class="text-xl font-bold">Feature Flags Admin</h2>
+                </div>
+                
+                <p class="text-sm text-gray-500 mb-6">
+                    Simula un sistema come LaunchDarkly o Firebase Remote Config. Attiva i flag per cambiare l'esperienza utente in tempo reale.
+                </p>
+
+                <!-- Toggle 1: Promo Banner -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-gray-700">Promo Banner</div>
+                        <div class="text-xs text-gray-500">Mostra avviso sconti</div>
+                    </div>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="flag-promo" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 left-0 transition-all duration-300"/>
+                        <label for="flag-promo" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+
+                <!-- Toggle 2: Checkout V2 -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-gray-700">Checkout V2</div>
+                        <div class="text-xs text-gray-500">Abilita "1-Click Buy"</div>
+                    </div>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" name="toggle" id="flag-checkout" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 left-0 transition-all duration-300"/>
+                        <label for="flag-checkout" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+
+                <!-- Toggle 3: Dark Mode -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div>
+                        <div class="font-bold text-gray-700">Dark Mode (Beta)</div>
+                        <div class="text-xs text-gray-500">Test nuovo tema scuro</div>
+                    </div>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" name="toggle" id="flag-darkmode" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 left-0 transition-all duration-300"/>
+                        <label for="flag-darkmode" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900 text-green-400 p-3 rounded text-xs font-mono mt-8">
+                    <div class="mb-1 text-gray-500">// Stato JSON Attuale</div>
+                    <div id="json-output">{ ... }</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNA 2: USER APP (Il Frontend) -->
+        <div class="lg:col-span-2">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold" id="app-title">E-Commerce Store</h2>
+                <span class="px-3 py-1 border rounded text-xs font-mono">v2.4.0 (Build 892)</span>
+            </div>
+
+            <!-- FEATURE: Promo Banner (Nascosto di default) -->
+            <div id="component-promo" class="hidden mb-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-lg shadow-lg transform transition-all duration-500">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-bolt text-yellow-300 text-xl"></i>
+                        <div>
+                            <p class="font-bold text-lg">FLASH SALE ATTIVA!</p>
+                            <p class="text-sm opacity-90">Sconto del 20% applicato al carrello.</p>
+                        </div>
+                    </div>
+                    <button class="bg-white text-indigo-600 px-4 py-1 rounded font-bold text-sm hover:bg-gray-100">Vedi</button>
+                </div>
+            </div>
+
+            <!-- Product Card -->
+            <div id="product-card" class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+                <!-- Immagine Placeholder -->
+                <div class="h-48 bg-gray-200 w-full flex items-center justify-center relative">
+                    <i class="fa-solid fa-headphones text-6xl text-gray-400"></i>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-2xl font-bold" id="prod-title">Sony WH-1000XM5</h3>
+                            <p class="text-gray-500 text-sm">Cuffie Wireless Noise Cancelling</p>
+                        </div>
+                        <span class="text-xl font-bold text-green-600">€349.00</span>
+                    </div>
+
+                    <p class="text-gray-600 mt-4 mb-8" id="prod-desc">
+                        Le migliori cuffie con cancellazione del rumore sul mercato. Audio cristallino e batteria a lunga durata.
+                    </p>
+
+                    <!-- FEATURE: Checkout Logic Area -->
+                    <div class="border-t pt-6">
+                        <p class="text-xs font-mono mb-3 opacity-50 uppercase tracking-wide">Area Logica Checkout</p>
+                        
+                        <!-- Versione Standard (Default) -->
+                        <div id="checkout-v1" class="block">
+                            <button class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                Aggiungi al Carrello
+                            </button>
+                            <p class="text-xs text-center mt-2 text-gray-400">Checkout standard a 3 passaggi</p>
+                        </div>
+
+                        <!-- Versione V2 (Feature Flagged) -->
+                        <div id="checkout-v2" class="hidden">
+                            <div class="flex gap-3">
+                                <button class="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded-lg transition shadow-md flex items-center justify-center gap-2 transform hover:scale-[1.02]">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    Compra Subito (1-Click)
+                                </button>
+                                <button class="px-4 py-3 bg-gray-100 rounded-lg text-gray-600 hover:bg-gray-200">
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                            </div>
+                            <p class="text-xs text-center mt-2 text-green-600 font-bold">
+                                <i class="fa-solid fa-flask"></i> Beta Feature Attiva
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Riferimenti al DOM (Elementi HTML)
+        const toggles = {
+            promo: document.getElementById('flag-promo'),
+            checkout: document.getElementById('flag-checkout'),
+            darkmode: document.getElementById('flag-darkmode')
+        };
+
+        const ui = {
+            body: document.getElementById('main-body'),
+            promoBanner: document.getElementById('component-promo'),
+            checkoutV1: document.getElementById('checkout-v1'),
+            checkoutV2: document.getElementById('checkout-v2'),
+            productCard: document.getElementById('product-card'),
+            titles: [document.getElementById('app-title'), document.getElementById('prod-title')],
+            desc: document.getElementById('prod-desc'),
+            jsonOutput: document.getElementById('json-output')
+        };
+
+        // 2. Stato Iniziale (Flags)
+        let flags = {
+            promo_banner: false,
+            new_checkout: false,
+            dark_mode: false
+        };
+
+        // 3. Funzione Principale: Applica i cambiamenti in base ai Flags
+        function render() {
+            // Aggiorna JSON Debug
+            ui.jsonOutput.innerText = JSON.stringify(flags, null, 2);
+
+            // --- LOGICA FLAG: PROMO BANNER ---
+            if (flags.promo_banner) {
+                ui.promoBanner.classList.remove('hidden');
+            } else {
+                ui.promoBanner.classList.add('hidden');
+            }
+
+            // --- LOGICA FLAG: CHECKOUT FLOW ---
+            if (flags.new_checkout) {
+                ui.checkoutV1.classList.add('hidden'); // Nascondi vecchio
+                ui.checkoutV1.classList.remove('block');
+                
+                ui.checkoutV2.classList.remove('hidden'); // Mostra nuovo
+                ui.checkoutV2.classList.add('block');
+            } else {
+                ui.checkoutV2.classList.add('hidden'); // Nascondi nuovo
+                ui.checkoutV2.classList.remove('block');
+
+                ui.checkoutV1.classList.remove('hidden'); // Mostra vecchio
+                ui.checkoutV1.classList.add('block');
+            }
+
+            // --- LOGICA FLAG: DARK MODE ---
+            if (flags.dark_mode) {
+                ui.body.classList.remove('bg-gray-100', 'text-gray-800');
+                ui.body.classList.add('bg-gray-900', 'text-gray-100');
+                
+                ui.productCard.classList.remove('bg-white', 'border-gray-100');
+                ui.productCard.classList.add('bg-gray-800', 'border-gray-700');
+                
+                ui.titles.forEach(el => el.classList.add('text-white'));
+                ui.desc.classList.add('text-gray-300');
+            } else {
+                ui.body.classList.add('bg-gray-100', 'text-gray-800');
+                ui.body.classList.remove('bg-gray-900', 'text-gray-100');
+                
+                ui.productCard.classList.add('bg-white', 'border-gray-100');
+                ui.productCard.classList.remove('bg-gray-800', 'border-gray-700');
+                
+                ui.titles.forEach(el => el.classList.remove('text-white'));
+                ui.desc.classList.remove('text-gray-300');
+            }
+        }
+
+        // 4. Event Listeners (Ascolta i click sugli switch)
+        toggles.promo.addEventListener('change', (e) => {
+            flags.promo_banner = e.target.checked;
+            render();
+        });
+
+        toggles.checkout.addEventListener('change', (e) => {
+            flags.new_checkout = e.target.checked;
+            render();
+        });
+
+        toggles.darkmode.addEventListener('change', (e) => {
+            flags.dark_mode = e.target.checked;
+            render();
+        });
+
+        // Render iniziale
+        render();
+
+    </script>
+</body>
+</html>
